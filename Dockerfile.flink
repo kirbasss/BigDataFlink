@@ -1,0 +1,11 @@
+FROM maven:3.9.9-eclipse-temurin-17 AS build
+
+WORKDIR /build
+COPY flink-job/pom.xml flink-job/pom.xml
+COPY flink-job/src flink-job/src
+RUN mvn -f flink-job/pom.xml clean package -DskipTests
+
+FROM flink:1.19.1-java17
+
+COPY --from=build /build/flink-job/target/lab3-flink-job.jar /opt/flink/usrlib/lab3-flink-job.jar
+
