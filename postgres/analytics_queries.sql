@@ -13,7 +13,7 @@ SELECT COUNT(*) AS stores
 FROM dim_store;
 
 
--- Проверка целостности после добавления внешних ключей
+-- Проверка внешних ключей схемы звезда
 
 SELECT
     tc.table_name,
@@ -31,8 +31,7 @@ WHERE tc.constraint_type = 'FOREIGN KEY'
 ORDER BY tc.table_name, tc.constraint_name;
 
 
--- Пример витринного запроса по продажам
--- В запросе участвуют факт и связанные измерения звезды
+-- Пример витринного запроса по схеме звезда
 
 SELECT
     fs.event_key,
@@ -91,6 +90,19 @@ FROM fact_sales fs
 JOIN dim_date dd ON dd.date_key = fs.date_key
 GROUP BY dd.year_number, dd.month_number
 ORDER BY dd.year_number, dd.month_number;
+
+
+-- Выручка по брендам товаров
+
+SELECT
+    dp.product_brand,
+    SUM(fs.sale_quantity) AS total_quantity,
+    SUM(fs.sale_total_price) AS total_revenue
+FROM fact_sales fs
+JOIN dim_product dp ON dp.product_key = fs.product_key
+GROUP BY dp.product_brand
+ORDER BY total_revenue DESC
+LIMIT 15;
 
 
 -- Средний чек по магазинам
